@@ -1,51 +1,28 @@
 <?php
 
 class Player {
-    public $level;
-}
-
-class Encounter {
-    // Déclaration des constantes de classe
-    const RESULT_WINNER = 1;
-    const RESULT_LOSER = -1;
-    const RESULT_DRAW = 0;
-
-    public static function probabilityAgainst($levelPlayerOne, $againstLevelPlayerTwo)
+    private $level;
+    public function __construct($initialLevel)
     {
-        return 1 / (1 + (10 ** (($againstLevelPlayerTwo - $levelPlayerOne) / 400)));
+        $this->level = $initialLevel;
     }
 
-    public static function setNewLevel(&$levelPlayerOne, $againstLevelPlayerTwo, $playerOneResult)
+    public function getLevel()
     {
-        // Utilisation des constantes de classe avec self::
-        if (!in_array($playerOneResult, [self::RESULT_WINNER, self::RESULT_LOSER, self::RESULT_DRAW])) {
-            trigger_error(sprintf('Invalid result. Expected %s', implode(' or ', [self::RESULT_WINNER, self::RESULT_LOSER, self::RESULT_DRAW])));
-        }
-
-        $levelPlayerOne += (int) (32 * ($playerOneResult - self::probabilityAgainst($levelPlayerOne, $againstLevelPlayerTwo)));
+        return $this->level;
+    }
+    public function setLevel($newLevel)
+    {
+        $this->level = $newLevel;
     }
 }
 
-// Exemple d'utilisation
-$greg = new Player();
-$jade = new Player();
+$greg = new Player(400);
 
-$greg->level = 400;
-$jade->level = 800;
+echo sprintf('Le niveau de Greg est : %s', $greg->getLevel()) . PHP_EOL;
 
-echo sprintf(
-    'Greg a %.2f%% chance de gagner face à Jade',
-    Encounter::probabilityAgainst($greg->level, $jade->level) * 100
-) . PHP_EOL;
+$greg->setLevel(450);
 
-// Imaginons que Greg l'emporte tout de même.
-Encounter::setNewLevel($greg->level, $jade->level, Encounter::RESULT_WINNER);
-Encounter::setNewLevel($jade->level, $greg->level, Encounter::RESULT_LOSER);
-
-echo sprintf(
-    'Les niveaux des joueurs ont évolué vers %s pour Greg et %s pour Jade',
-    $greg->level,
-    $jade->level
-);
+echo sprintf('Le nouveau niveau de Greg est : %s', $greg->getLevel()) . PHP_EOL;
 
 exit(0);
